@@ -1,12 +1,5 @@
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center')
-```
-```{r load_libraries}
-library(tidyverse)
-library(ggthemes)
-library(ggmap)
-library(htmlwidgets)
-```
+
+
 
 # Exploratory Data Analysis of Tropical Storms in R  
 
@@ -25,11 +18,15 @@ The original source of the data was can be found at [DHS.gov](https://hifld-dhs-
 #### Step 1:  Take a look at your data set and see how it is laid out  
 
 
-```{r read_data}
-# data source https://data.world/dhs/historical-tropical-storm
-data = read_csv('data/Historical_Tropical_Storm_Tracks.csv')
-knitr::kable(head(data))
-```
+
+|  FID| YEAR| MONTH| DAY|AD_TIME | BTID|NAME     |  LAT|   LONG| WIND_KTS| PRESSURE|CAT |BASIN           | Shape_Leng|
+|----:|----:|-----:|---:|:-------|----:|:--------|----:|------:|--------:|--------:|:---|:---------------|----------:|
+| 2001| 1957|     8|   8|1800Z   |   63|NOTNAMED | 22.5| -140.0|       50|        0|TS  |Eastern Pacific |   1.140175|
+| 2002| 1961|    10|   3|1200Z   |  116|PAULINE  | 22.1| -140.2|       45|        0|TS  |Eastern Pacific |   1.166190|
+| 2003| 1962|     8|  29|0600Z   |  124|C        | 18.0| -140.0|       45|        0|TS  |Eastern Pacific |   2.102380|
+| 2004| 1967|     7|  14|0600Z   |  168|DENISE   | 16.6| -139.5|       45|        0|TS  |Eastern Pacific |   2.121320|
+| 2005| 1972|     8|  16|1200Z   |  251|DIANA    | 18.5| -139.8|       70|        0|H1  |Eastern Pacific |   1.702939|
+| 2006| 1976|     7|  22|0000Z   |  312|DIANA    | 18.6| -139.8|       30|        0|TD  |Eastern Pacific |   1.600000|
   
   
 Fortunately, this is a tidy data set which will make life easier and appears to be cleaned up substantially. The column names are relatively straightforward with the exception of "ID" columns.
@@ -41,13 +38,15 @@ The description as given by [DHS.gov](https://hifld-dhs-gii.opendata.arcgis.com/
 
 #### Step 2:  View some descriptive statistics  
 
-```{r}
-knitr::kable(summary(data %>% select(YEAR, 
-                                     MONTH, 
-                                     DAY,
-                                     WIND_KTS,
-                                     PRESSURE)))
-```
+
+|   |     YEAR    |    MONTH      |     DAY      |   WIND_KTS    |   PRESSURE    |
+|:--|:------------|:--------------|:-------------|:--------------|:--------------|
+|   |Min.   :1851 |Min.   : 1.000 |Min.   : 1.00 |Min.   : 10.00 |Min.   :   0.0 |
+|   |1st Qu.:1928 |1st Qu.: 8.000 |1st Qu.: 8.00 |1st Qu.: 35.00 |1st Qu.:   0.0 |
+|   |Median :1970 |Median : 9.000 |Median :16.00 |Median : 50.00 |Median :   0.0 |
+|   |Mean   :1957 |Mean   : 8.541 |Mean   :15.87 |Mean   : 54.73 |Mean   : 372.3 |
+|   |3rd Qu.:1991 |3rd Qu.: 9.000 |3rd Qu.:23.00 |3rd Qu.: 70.00 |3rd Qu.: 990.0 |
+|   |Max.   :2008 |Max.   :12.000 |Max.   :31.00 |Max.   :165.00 |Max.   :1024.0 |
 
 
 We can confirm that this particular data had storms from 1851 - 2010, that means the data goes back roughly 100 years before naming storms started! We can also see that the minimum pressure values are 0, which likely means it could not be measured (due to the fact zero pressure is not possible in this case). We can see that there are recorded months from January to December along with days extending from 1 to 31. Whenever you see all of the dates laid out that way, you can smile and think to yourself, "if I need to, I can put dates in an easy to use format such as YYYY-mm-dd (2017-09-12)!"  
@@ -56,18 +55,7 @@ We can confirm that this particular data had storms from 1851 - 2010, that means
 #### Step 3: Make a basic plot  
 
 
-```{r}
-df = data %>%
-  filter(NAME != 'NOTNAMED' & NAME != 'SUBTROP1') %>%
-  group_by(YEAR) %>%
-  summarise(Distinct_Storms = n_distinct(NAME))
-
-p = ggplot(df, aes(x = YEAR, y = Distinct_Storms)) + theme_economist()
-p + geom_line(size = 1.1) + 
-  ggtitle("Number of Storms Per Year") + 
-  geom_smooth(method='lm', se = FALSE) + 
-  ylab("Storms")
-```
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-2-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" />
  
 
 This is a great illustration of our data set and we can easily notice an upward trend in the number of storms over time. Before we go running to tell the world that the number of storms per year is growing, we need to drill down a bit deeper. This could simply be caused because more types of storms were added to the data set (we know there are hurricanes, tropical storms, waves, etc.) being recorded. However, we should keep it in mind when we start to develop hypotheses.  
@@ -78,29 +66,33 @@ This is a great illustration of our data set and we can easily notice an upward 
 
 #### Step 4: Make some calculations
 
-```{r}
-pct.diff = function(x){round((x-lag(x))/lag(x),2)}
-act.diff = function(x){round((x-lag(x)),2)}
-df = data %>%
-  arrange(YEAR) %>%
-  filter(NAME != 'NOTNAMED' & NAME != 'SUBTROP1') %>%
-  group_by(YEAR) %>%
-  summarise(Distinct_Storms = n_distinct(NAME)) %>%
-  mutate(Distinct_Storms_Change = act.diff(Distinct_Storms),
-         Distinct_Storms_Pct_Change = pct.diff(Distinct_Storms)) %>%
-  na.omit() %>%
-  arrange(YEAR)
-df$YEAR = factor(df$YEAR)
-knitr::kable(head(df,10))
-```
+
+|YEAR | Distinct_Storms| Distinct_Storms_Change| Distinct_Storms_Pct_Change|
+|:----|---------------:|----------------------:|--------------------------:|
+|1951 |              10|                     -3|                      -0.23|
+|1952 |               6|                     -4|                      -0.40|
+|1953 |               8|                      2|                       0.33|
+|1954 |               8|                      0|                       0.00|
+|1955 |              10|                      2|                       0.25|
+|1956 |               7|                     -3|                      -0.30|
+|1957 |               9|                      2|                       0.29|
+|1958 |              10|                      1|                       0.11|
+|1959 |              13|                      3|                       0.30|
+|1960 |              13|                      0|                       0.00|
   
   
 In this case, we can see the number of storms, nominal change and percentage change per year. These calculations help to shed light on what the growth rate looks like each year.  So we can use another summary table:  
 
 
-```{r}
-knitr::kable(summary(df %>% select(-YEAR)))
-```
+
+|   |Distinct_Storms |Distinct_Storms_Change |Distinct_Storms_Pct_Change |
+|:--|:---------------|:----------------------|:--------------------------|
+|   |Min.   : 6.00   |Min.   :-15.0000       |Min.   :-0.42000           |
+|   |1st Qu.:15.75   |1st Qu.: -3.0000       |1st Qu.:-0.12000           |
+|   |Median :25.00   |Median :  1.0000       |Median : 0.04000           |
+|   |Mean   :22.81   |Mean   :  0.3448       |Mean   : 0.05966           |
+|   |3rd Qu.:28.00   |3rd Qu.:  3.7500       |3rd Qu.: 0.25000           |
+|   |Max.   :43.00   |Max.   : 16.0000       |Max.   : 1.14000           |
   
 From the table we can state the following for the given time period:  
 
@@ -116,23 +108,7 @@ Again, we have to be careful because these numbers are in aggregate and may not 
 #### Step 5: Make a more interesting plot  
 
 
-```{r}
-df = data %>%
-  filter(NAME != 'NOTNAMED' & NAME != 'SUBTROP1') %>%
-  filter(grepl("H", CAT)) %>%
-  group_by(YEAR,CAT) %>%
-  summarise(Distinct_Storms = n_distinct(NAME))
-df$CAT = factor(df$CAT)
-
-p = ggplot(df, aes(x = YEAR, y = Distinct_Storms, col = CAT)) + theme_economist()
-p + geom_line(size = 1.1) + 
-  scale_color_brewer(direction = -1, palette = "Spectral") + 
-  ggtitle("Number of Storms Per Year By Category (H)") + 
-  facet_wrap(~CAT, scales = "free_x") + 
-  geom_smooth(method = 'lm', se = FALSE, col = 'black') +
-  theme(axis.text.x = element_text(angle=90), legend.position = 'none') + 
-  ylab('Storms')
-```
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" style="display: block; margin: auto;" />
   
 
 Because I was most interested in hurricanes, I filtered out only the data which was classified as "H (1-5)." By utilizing a data visualization technique called "small multiples" I was able to pull out the different types and view them within the same graph. While this is possible to do in tables and spreadsheets, it's much easier to visualize this way. By holding the axes constant, we can see the majority of the storms are classified as H1 and then it appears to consistently drop down toward H5 (with very few actually being classified as H5). We can also see that most have an upward trend from 1950 - 2010. The steepest appears to be H1 (but it also flattens out over the last decade).  
@@ -140,19 +116,15 @@ Because I was most interested in hurricanes, I filtered out only the data which 
 
 #### Step 6: Make a filtered calculation  
 
-```{r}
-df = data %>%
-  arrange(YEAR) %>%
-  filter(grepl("H", CAT)) %>%
-  filter(NAME != 'NOTNAMED' & NAME != 'SUBTROP1') %>%
-  group_by(YEAR) %>%
-  summarise(Distinct_Storms = n_distinct(NAME)) %>%
-  mutate(Distinct_Storms_Change = act.diff(Distinct_Storms),
-         Distinct_Storms_Pct_Change = pct.diff(Distinct_Storms)) %>%
-  na.omit() %>%
-  arrange(YEAR)
-knitr::kable(summary(df %>% select(-YEAR)))
-```
+
+|   |Distinct_Storms |Distinct_Storms_Change |Distinct_Storms_Pct_Change |
+|:--|:---------------|:----------------------|:--------------------------|
+|   |Min.   : 4.00   |Min.   :-11.00000      |Min.   :-0.56000           |
+|   |1st Qu.: 9.25   |1st Qu.: -4.00000      |1st Qu.:-0.25750           |
+|   |Median :13.50   |Median :  0.00000      |Median : 0.00000           |
+|   |Mean   :12.76   |Mean   :  0.05172      |Mean   : 0.08379           |
+|   |3rd Qu.:15.00   |3rd Qu.:  3.00000      |3rd Qu.: 0.35250           |
+|   |Max.   :24.00   |Max.   : 10.00000      |Max.   : 1.80000           |
 
 
 Now we are looking strictly at hurricane data (classified as H1-H5):  
@@ -172,29 +144,7 @@ Be ready, as soon as you make a statement like that, you will likely have to exp
 
 #### Step 7: Try visualizing your statements  
 
-```{r, fig.height = 3, fig.width = 9}
-
-df = data %>%
-  filter(NAME != 'NOTNAMED' & NAME != 'SUBTROP1') %>%
-  filter(grepl("H", CAT)) %>%
-  group_by(YEAR) %>%
-  summarise(Distinct_Storms = n_distinct(NAME)) %>%
-  mutate(Distinct_Storms_Pct_Change = pct.diff(Distinct_Storms))
-
-p = ggplot(df,aes(x = Distinct_Storms_Pct_Change)) + theme_economist()
-
-p1 = p + geom_histogram(bins = 20) +
-  ggtitle("YoY % Change Density") +
-  scale_x_continuous(labels = scales::percent) +
-  ylab('') + xlab('YoY % Change in Hurricanes')
-
-p2 = p + geom_density(fill='darkgrey',alpha=0.5) +
-  ggtitle("YoY % Change Density") +
-  scale_x_continuous(labels = scales::percent) +
-  ylab('') + xlab('YoY % Change in Hurricanes')
-
-gridExtra::grid.arrange(p1,p2,ncol=2)
-```
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-7-1.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" style="display: block; margin: auto;" />
 
 
 A histogram and/or density plot is a great way to visualize the distribution of the data you are making statements about. This plot helps to show that we are looking at a right-skewed distribution with substantial variance. Knowing that we have n = 58 (meaning 58 years after being aggregated), it's not surprising that our histogram looks sparse and our density plot has an unusual shape. At this point, you can make a decision to jot this down, research it in depth and then attack it with full force.  
@@ -206,27 +156,14 @@ However, that's not what we're covering in this post.
 #### Step 8: Plot another aspect of your data
 
 
-```{r}
-big_map <- get_googlemap(c(lon=-95, lat=30), zoom = 4, maptype = "terrain")
-ggmap(big_map, extent='panel') + 
-  geom_point(data = data, mapping = aes(x = LONG, y = LAT),col='red',alpha=0.1)
-```
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-8-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" style="display: block; margin: auto;" />
 
 
 60K pieces of data can get out of hand quickly, we need to back this down into manageable chunks. Building on the knowledge from our last exploration, we should be able to think of a way to cut this down to get some better information. The concept of small multiples could come in handy again! Splitting the data up by type of storm could prove to be invaluable. We can also tell that we are missing
 
 -----
 
-```{r}
-df = data %>% filter(grepl("H", CAT))
-ggmap(big_map) + 
-  geom_density_2d(data = df, mapping = aes(x = LONG, y = LAT), size = 0.5) + 
-  stat_density2d(data = df, 
-    aes(x = LONG, y = LAT, fill = ..level.., alpha = ..level..), size = 0.1, 
-    bins = 20, geom = "polygon") + scale_fill_gradient(low = "green", high = "red", 
-    guide = FALSE) + scale_alpha(range = c(0.1, 0.5), guide = FALSE) + 
-  facet_wrap(~CAT)
-```
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-9-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" style="display: block; margin: auto;" />
   
 
 After filtering the data down to hurricanes and utilizing a heatmap rather than plotting individual points we can get a better handle on what is happening where. The H4 and H5 sections are probably the most interesting. It appears as if H4 storms are more frequent on the West coast of Mexico whereas the H5 are most frequent in the Gulf of Mexico.  
@@ -235,16 +172,7 @@ After filtering the data down to hurricanes and utilizing a heatmap rather than 
 Because we're still in EDA mode, we'll continue with another plot.  
 
 
-```{r}
-df = data %>% filter(!grepl("H", CAT) & !grepl("W", CAT))
-ggmap(big_map) + 
-  geom_density_2d(data = df, mapping = aes(x = LONG, y = LAT), size = 0.5) + 
-  stat_density2d(data = df, 
-    aes(x = LONG, y = LAT, fill = ..level.., alpha = ..level..), size = 0.1, 
-    bins = 20, geom = "polygon") + scale_fill_gradient(low = "green", high = "red", 
-    guide = FALSE) + scale_alpha(range = c(0.1, 0.5), guide = FALSE) + 
-  facet_wrap(~CAT)
-```
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-10-1.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" style="display: block; margin: auto;" />
 
 
 Here are some of the other storms from the data set. We can see that TD, TS and L have large geographical spreads. The E, SS, and SD storms are concentrated further North toward New England.  
@@ -255,23 +183,7 @@ Digging into this type of data and building probabalistic models is a fascinatin
 #### Step 9: Look for a relationship
 
 
-```{r}
-df = data %>% 
-  filter(PRESSURE > 0) %>%
-  filter(grepl("H", CAT)) %>%
-  group_by(CAT,YEAR,MONTH,DAY,LAT,LONG) %>%
-  summarise(MEAN_WIND_KTS = mean(WIND_KTS), MEAN_PRESSURE = mean(PRESSURE)) %>%
-  arrange(MEAN_WIND_KTS)
-df$CAT = factor(df$CAT)
-
-p = ggplot(df,aes(x=MEAN_WIND_KTS, y = MEAN_PRESSURE, fill = CAT)) + theme_economist()
-p + 
-  geom_hex(alpha = 0.8) +
-  scale_fill_brewer(direction = -1, palette = "Spectral") + 
-  scale_y_continuous(labels = scales::comma)+ 
-  theme(legend.position = 'right') + 
-  ggtitle("Wind KTS vs. Pressure by Category (H)")
-```
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-11-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" style="display: block; margin: auto;" />
   
    
 What is the relationship between WIND_KTS and PRESSURE? This chart helps us to see that low PRESSURE and WIND_KTS are likely negatively correlated. We can also see that the WIND_KTS is essentially the predictor in the data set which can perfectly predict how a storm is classified. Well, it turns out, that's basically the distinguising feature when scientists are determining how to categorize these storms!  
@@ -291,15 +203,7 @@ Some food for thought:
 To get you started on the first one, here's the Top 10 most common names for tropical storms. Why do you think it's Florence?
 
 
-```{r}
-top_names = data %>%
-  filter(NAME != 'NOTNAMED' & NAME != 'SUBTROP1') %>%
-  group_by(NAME) %>%
-  summarise(Years_Used = n_distinct(YEAR)) %>%
-  arrange(-Years_Used)
-p = ggplot(top_names %>% top_n(10), aes(x = reorder(NAME, Years_Used), y = Years_Used)) + theme_economist()
-p + geom_bar(stat='identity') + coord_flip() + xlab('') + ggtitle('Most Used Tropical Storm Names')
-```
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-12-1.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" style="display: block; margin: auto;" />
 
 
 Thank you for reading, I hope this helps you with your own data. The code is all written in R and is located on my [GitHub](https://github.com/stoltzmaniac/Tropical-Storm-Data-Analysis). You can also find other data visualization posts and usages of ggplot2 on my blog [Stoltzmaniac](https://www.stoltzmaniac.com?utm_campaign=bottom_of_tropical_storm_post)
