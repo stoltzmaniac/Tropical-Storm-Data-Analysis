@@ -6,6 +6,8 @@
 
 # Exploratory Data Analysis of Tropical Storms in R  
 
+### (knit in RMarkdown after cloning, the charts and graphs were distorted by attempting to use RWordPress - still working out the kinks)
+
 The disastrous impact of recent hurricanes, Harvey and Irma, generated a large influx of data within the online community. I was curious as to what the history of hurricanes and tropical storms looked like so I found a data set on [data.world](https://data.world/dhs/historical-tropical-storm) and started some basic Exploratory data analysis (EDA).  
 
 
