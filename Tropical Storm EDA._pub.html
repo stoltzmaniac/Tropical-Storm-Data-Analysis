@@ -1,0 +1,472 @@
+<h1>Exploratory Data Analysis of Tropical Storms in R</h1>
+
+<p>The disastrous impact of recent hurricanes, Harvey and Irma, generated a large influx of data within the online community. I was curious as to what the history of hurricanes and tropical storms looked like so I found a data set on <a href="https://data.world/dhs/historical-tropical-storm">data.world</a> and started some basic Exploratory data analysis (EDA).  </p>
+
+<p>EDA is crucial to starting any project. Through EDA you can start to identify errors &amp; inconsistencies in your data, find interesting patterns, see correlations and start to develop hypotheses to test. For most people, basic spreadsheets and charts are pretty handy and provide a great place to start. They are an easy-to-use method to manipulate and visualize your data quickly. Data scientists may cringe at the idea of using a graphical user interface (GUI) to kick-off the EDA process but the reality is clear, those tools are very effective and efficient when used properly. However, if you&#39;re reading this, you&#39;re probably trying to take EDA to the next level. The best way to learn is to get your hands dirty, let&#39;s get started.  </p>
+
+<p>The original source of the data was can be found at <a href="https://hifld-dhs-gii.opendata.arcgis.com/datasets/3ea21accbfab4ed8b14ede2e802cc2ec_0">DHS.gov</a>.  </p>
+
+<hr/>
+
+<h4>Step 1:  Take a look at your data set and see how it is laid out</h4>
+
+<table><thead>
+<tr>
+<th align="right">FID</th>
+<th align="right">YEAR</th>
+<th align="right">MONTH</th>
+<th align="right">DAY</th>
+<th align="left">AD_TIME</th>
+<th align="right">BTID</th>
+<th align="left">NAME</th>
+<th align="right">LAT</th>
+<th align="right">LONG</th>
+<th align="right">WIND_KTS</th>
+<th align="right">PRESSURE</th>
+<th align="left">CAT</th>
+<th align="left">BASIN</th>
+<th align="right">Shape_Leng</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="right">2001</td>
+<td align="right">1957</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="left">1800Z</td>
+<td align="right">63</td>
+<td align="left">NOTNAMED</td>
+<td align="right">22.5</td>
+<td align="right">-140.0</td>
+<td align="right">50</td>
+<td align="right">0</td>
+<td align="left">TS</td>
+<td align="left">Eastern Pacific</td>
+<td align="right">1.140175</td>
+</tr>
+<tr>
+<td align="right">2002</td>
+<td align="right">1961</td>
+<td align="right">10</td>
+<td align="right">3</td>
+<td align="left">1200Z</td>
+<td align="right">116</td>
+<td align="left">PAULINE</td>
+<td align="right">22.1</td>
+<td align="right">-140.2</td>
+<td align="right">45</td>
+<td align="right">0</td>
+<td align="left">TS</td>
+<td align="left">Eastern Pacific</td>
+<td align="right">1.166190</td>
+</tr>
+<tr>
+<td align="right">2003</td>
+<td align="right">1962</td>
+<td align="right">8</td>
+<td align="right">29</td>
+<td align="left">0600Z</td>
+<td align="right">124</td>
+<td align="left">C</td>
+<td align="right">18.0</td>
+<td align="right">-140.0</td>
+<td align="right">45</td>
+<td align="right">0</td>
+<td align="left">TS</td>
+<td align="left">Eastern Pacific</td>
+<td align="right">2.102380</td>
+</tr>
+<tr>
+<td align="right">2004</td>
+<td align="right">1967</td>
+<td align="right">7</td>
+<td align="right">14</td>
+<td align="left">0600Z</td>
+<td align="right">168</td>
+<td align="left">DENISE</td>
+<td align="right">16.6</td>
+<td align="right">-139.5</td>
+<td align="right">45</td>
+<td align="right">0</td>
+<td align="left">TS</td>
+<td align="left">Eastern Pacific</td>
+<td align="right">2.121320</td>
+</tr>
+<tr>
+<td align="right">2005</td>
+<td align="right">1972</td>
+<td align="right">8</td>
+<td align="right">16</td>
+<td align="left">1200Z</td>
+<td align="right">251</td>
+<td align="left">DIANA</td>
+<td align="right">18.5</td>
+<td align="right">-139.8</td>
+<td align="right">70</td>
+<td align="right">0</td>
+<td align="left">H1</td>
+<td align="left">Eastern Pacific</td>
+<td align="right">1.702939</td>
+</tr>
+<tr>
+<td align="right">2006</td>
+<td align="right">1976</td>
+<td align="right">7</td>
+<td align="right">22</td>
+<td align="left">0000Z</td>
+<td align="right">312</td>
+<td align="left">DIANA</td>
+<td align="right">18.6</td>
+<td align="right">-139.8</td>
+<td align="right">30</td>
+<td align="right">0</td>
+<td align="left">TD</td>
+<td align="left">Eastern Pacific</td>
+<td align="right">1.600000</td>
+</tr>
+</tbody></table>
+
+<p>Fortunately, this is a tidy data set which will make life easier and appears to be cleaned up substantially. The column names are relatively straightforward with the exception of &ldquo;ID&rdquo; columns.</p>
+
+<p>The description as given by <a href="https://hifld-dhs-gii.opendata.arcgis.com/datasets/3ea21accbfab4ed8b14ede2e802cc2ec_0">DHS.gov</a>: </p>
+
+<blockquote>
+<p>This dataset represents Historical North Atlantic and Eastern North Pacific Tropical Cyclone Tracks with 6-hourly (0000, 0600, 1200, 1800 UTC) center locations and intensities for all subtropical depressions and storms, extratropical storms, tropical lows, waves, disturbances, depressions and storms, and all hurricanes, from 1851 through 2008. These data are intended for geographic display and analysis at the national level, and for large regional areas. The data should be displayed and analyzed at scales appropriate for 1:2,000,000-scale data.  </p>
+</blockquote>
+
+<h4>Step 2:  View some descriptive statistics</h4>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="left">YEAR</th>
+<th align="left">MONTH</th>
+<th align="left">DAY</th>
+<th align="left">WIND_KTS</th>
+<th align="left">PRESSURE</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"></td>
+<td align="left">Min.   :1851</td>
+<td align="left">Min.   : 1.000</td>
+<td align="left">Min.   : 1.00</td>
+<td align="left">Min.   : 10.00</td>
+<td align="left">Min.   :   0.0</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">1st Qu.:1928</td>
+<td align="left">1st Qu.: 8.000</td>
+<td align="left">1st Qu.: 8.00</td>
+<td align="left">1st Qu.: 35.00</td>
+<td align="left">1st Qu.:   0.0</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Median :1970</td>
+<td align="left">Median : 9.000</td>
+<td align="left">Median :16.00</td>
+<td align="left">Median : 50.00</td>
+<td align="left">Median :   0.0</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Mean   :1957</td>
+<td align="left">Mean   : 8.541</td>
+<td align="left">Mean   :15.87</td>
+<td align="left">Mean   : 54.73</td>
+<td align="left">Mean   : 372.3</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">3rd Qu.:1991</td>
+<td align="left">3rd Qu.: 9.000</td>
+<td align="left">3rd Qu.:23.00</td>
+<td align="left">3rd Qu.: 70.00</td>
+<td align="left">3rd Qu.: 990.0</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Max.   :2008</td>
+<td align="left">Max.   :12.000</td>
+<td align="left">Max.   :31.00</td>
+<td align="left">Max.   :165.00</td>
+<td align="left">Max.   :1024.0</td>
+</tr>
+</tbody></table>
+
+<p>We can confirm that this particular data had storms from 1851 - 2010, that means the data goes back roughly 100 years before naming storms started! We can also see that the minimum pressure values are 0, which likely means it could not be measured (due to the fact zero pressure is not possible in this case). We can see that there are recorded months from January to December along with days extending from 1 to 31. Whenever you see all of the dates laid out that way, you can smile and think to yourself, &ldquo;if I need to, I can put dates in an easy to use format such as YYYY-mm-dd (2017-09-12)!&rdquo;  </p>
+
+<h4>Step 3: Make a basic plot</h4>
+
+<p><img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-2-1-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" /></p>
+
+<p>This is a great illustration of our data set and we can easily notice an upward trend in the number of storms over time. Before we go running to tell the world that the number of storms per year is growing, we need to drill down a bit deeper. This could simply be caused because more types of storms were added to the data set (we know there are hurricanes, tropical storms, waves, etc.) being recorded. However, we should keep it in mind when we start to develop hypotheses.  </p>
+
+<p><strong>You will notice the data starts at 1950 rather than 1851.</strong> I made this choice because storms were not named until this point so it would be difficult to try and count the unique storms per year. It could likely be done by finding a way to utilize the &ldquo;ID&rdquo; columns. However, this is a preliminary analysis so I didn&#39;t want to dig too deep.  </p>
+
+<h4>Step 4: Make some calculations</h4>
+
+<table><thead>
+<tr>
+<th align="left">YEAR</th>
+<th align="right">Distinct_Storms</th>
+<th align="right">Distinct_Storms_Change</th>
+<th align="right">Distinct_Storms_Pct_Change</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">1951</td>
+<td align="right">10</td>
+<td align="right">-3</td>
+<td align="right">-0.23</td>
+</tr>
+<tr>
+<td align="left">1952</td>
+<td align="right">6</td>
+<td align="right">-4</td>
+<td align="right">-0.40</td>
+</tr>
+<tr>
+<td align="left">1953</td>
+<td align="right">8</td>
+<td align="right">2</td>
+<td align="right">0.33</td>
+</tr>
+<tr>
+<td align="left">1954</td>
+<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+</tr>
+<tr>
+<td align="left">1955</td>
+<td align="right">10</td>
+<td align="right">2</td>
+<td align="right">0.25</td>
+</tr>
+<tr>
+<td align="left">1956</td>
+<td align="right">7</td>
+<td align="right">-3</td>
+<td align="right">-0.30</td>
+</tr>
+<tr>
+<td align="left">1957</td>
+<td align="right">9</td>
+<td align="right">2</td>
+<td align="right">0.29</td>
+</tr>
+<tr>
+<td align="left">1958</td>
+<td align="right">10</td>
+<td align="right">1</td>
+<td align="right">0.11</td>
+</tr>
+<tr>
+<td align="left">1959</td>
+<td align="right">13</td>
+<td align="right">3</td>
+<td align="right">0.30</td>
+</tr>
+<tr>
+<td align="left">1960</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+</tr>
+</tbody></table>
+
+<p>In this case, we can see the number of storms, nominal change and percentage change per year. These calculations help to shed light on what the growth rate looks like each year.  So we can use another summary table:  </p>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="left">Distinct_Storms</th>
+<th align="left">Distinct_Storms_Change</th>
+<th align="left">Distinct_Storms_Pct_Change</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"></td>
+<td align="left">Min.   : 6.00</td>
+<td align="left">Min.   :-15.0000</td>
+<td align="left">Min.   :-0.42000</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">1st Qu.:15.75</td>
+<td align="left">1st Qu.: -3.0000</td>
+<td align="left">1st Qu.:-0.12000</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Median :25.00</td>
+<td align="left">Median :  1.0000</td>
+<td align="left">Median : 0.04000</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Mean   :22.81</td>
+<td align="left">Mean   :  0.3448</td>
+<td align="left">Mean   : 0.05966</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">3rd Qu.:28.00</td>
+<td align="left">3rd Qu.:  3.7500</td>
+<td align="left">3rd Qu.: 0.25000</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Max.   :43.00</td>
+<td align="left">Max.   : 16.0000</td>
+<td align="left">Max.   : 1.14000</td>
+</tr>
+</tbody></table>
+
+<p>From the table we can state the following for the given time period:  </p>
+
+<ul>
+<li>The mean number of storms is 23 per year (with a minimum of 6 and maximum of 43)</li>
+<li>The mean change in the number of storms per year is 0.34 (with a minimum of -15 and maximum of 16)</li>
+<li>The mean percent change in the number of storms per year is 6% (with a minimum of -42% and maximum of 114%)</li>
+</ul>
+
+<p>Again, we have to be careful because these numbers are in aggregate and may not tell the whole story. Dividing these into groups of storms is likely much more meaningful.  </p>
+
+<h4>Step 5: Make a more interesting plot</h4>
+
+<p><img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-5-1-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" style="display: block; margin: auto;" /></p>
+
+<p>Because I was most interested in hurricanes, I filtered out only the data which was classified as &ldquo;H (1-5).&rdquo; By utilizing a data visualization technique called &ldquo;small multiples&rdquo; I was able to pull out the different types and view them within the same graph. While this is possible to do in tables and spreadsheets, it&#39;s much easier to visualize this way. By holding the axes constant, we can see the majority of the storms are classified as H1 and then it appears to consistently drop down toward H5 (with very few actually being classified as H5). We can also see that most have an upward trend from 1950 - 2010. The steepest appears to be H1 (but it also flattens out over the last decade).  </p>
+
+<h4>Step 6: Make a filtered calculation</h4>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="left">Distinct_Storms</th>
+<th align="left">Distinct_Storms_Change</th>
+<th align="left">Distinct_Storms_Pct_Change</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left"></td>
+<td align="left">Min.   : 4.00</td>
+<td align="left">Min.   :-11.00000</td>
+<td align="left">Min.   :-0.56000</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">1st Qu.: 9.25</td>
+<td align="left">1st Qu.: -4.00000</td>
+<td align="left">1st Qu.:-0.25750</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Median :13.50</td>
+<td align="left">Median :  0.00000</td>
+<td align="left">Median : 0.00000</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Mean   :12.76</td>
+<td align="left">Mean   :  0.05172</td>
+<td align="left">Mean   : 0.08379</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">3rd Qu.:15.00</td>
+<td align="left">3rd Qu.:  3.00000</td>
+<td align="left">3rd Qu.: 0.35250</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Max.   :24.00</td>
+<td align="left">Max.   : 10.00000</td>
+<td align="left">Max.   : 1.80000</td>
+</tr>
+</tbody></table>
+
+<p>Now we are looking strictly at hurricane data (classified as H1-H5):  </p>
+
+<ul>
+<li>The mean number of hurricanes is 13 per year (with a minimum of 4 and maximum of 24)</li>
+<li>The mean change in the number of hurricanes per year is 0.05 (with a minimum of -11 and maximum of 10)</li>
+<li>The mean percent change in the number of hurricanes per year is 8% (with a minimum of -56% and maximum of 180%)<br/></li>
+</ul>
+
+<p>While it doesn&#39;t really make sense to say &ldquo;we got an average growth of 0.05 hurricanes per year between 1950 and 2010&rdquo; &hellip; it may make sense to say &ldquo;we saw an average of growth of 8% per year in the number of hurricanes between 1950 and 2010.&rdquo;  </p>
+
+<p>That&#39;s a great thing to put in quotes!</p>
+
+<blockquote>
+<p>During EDA we discovered an average of growth of 8% per year in the number of hurricanes between 1950 and 2010.  </p>
+</blockquote>
+
+<p>Be ready, as soon as you make a statement like that, you will likely have to explain how you arrived at that conclusion. That&#39;s where having an RMarkdown notebook and data online in a repository will help you out! Reproducible research is all of the hype right now.   </p>
+
+<h4>Step 7: Try visualizing your statements</h4>
+
+<p><img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-7-1-1.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" style="display: block; margin: auto;" /></p>
+
+<p>A histogram and/or density plot is a great way to visualize the distribution of the data you are making statements about. This plot helps to show that we are looking at a right-skewed distribution with substantial variance. Knowing that we have n = 58 (meaning 58 years after being aggregated), it&#39;s not surprising that our histogram looks sparse and our density plot has an unusual shape. At this point, you can make a decision to jot this down, research it in depth and then attack it with full force.  </p>
+
+<p>However, that&#39;s not what we&#39;re covering in this post.  </p>
+
+<h4>Step 8: Plot another aspect of your data</h4>
+
+<p><img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-8-1-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" style="display: block; margin: auto;" /></p>
+
+<p>60K pieces of data can get out of hand quickly, we need to back this down into manageable chunks. Building on the knowledge from our last exploration, we should be able to think of a way to cut this down to get some better information. The concept of small multiples could come in handy again! Splitting the data up by type of storm could prove to be invaluable. We can also tell that we are missing</p>
+
+<hr/>
+
+<p><img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-9-1-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" style="display: block; margin: auto;" /></p>
+
+<p>After filtering the data down to hurricanes and utilizing a heatmap rather than plotting individual points we can get a better handle on what is happening where. The H4 and H5 sections are probably the most interesting. It appears as if H4 storms are more frequent on the West coast of Mexico whereas the H5 are most frequent in the Gulf of Mexico.  </p>
+
+<p>Because we&#39;re still in EDA mode, we&#39;ll continue with another plot.  </p>
+
+<p><img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-10-1-1.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" style="display: block; margin: auto;" /></p>
+
+<p>Here are some of the other storms from the data set. We can see that TD, TS and L have large geographical spreads. The E, SS, and SD storms are concentrated further North toward New England.  </p>
+
+<p>Digging into this type of data and building probabalistic models is a fascinating field. The actuarial sciences are extremely difficult and insurance companies really need good models. Having mapped this data, it&#39;s pretty clear you could dig in and find out what parts of the country should expect what types of storms (and you&#39;ve also known this just from being alive for 10+ years). More hypotheses could be formed about location at this stage and could be tested!  </p>
+
+<h4>Step 9: Look for a relationship</h4>
+
+<p><img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-11-1-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" style="display: block; margin: auto;" /></p>
+
+<p>What is the relationship between WIND_KTS and PRESSURE? This chart helps us to see that low PRESSURE and WIND_KTS are likely negatively correlated. We can also see that the WIND_KTS is essentially the predictor in the data set which can perfectly predict how a storm is classified. Well, it turns out, that&#39;s basically the distinguising feature when scientists are determining how to categorize these storms!  </p>
+
+<h4>Step N&hellip;&hellip;</h4>
+
+<p>We have done some basic EDA and identified some patterns in the data. While doing some EDA is simply just for fun, in most data analysis, it&#39;s important to find a place to apply these discoveries by making and testing hypotheses! There are plenty of industries where you could find a use for this:  </p>
+
+<ul>
+<li>Insurance - improve statistical modeling and risk analysis</li>
+<li>Real Estate Development - identify strategic investment locations</li>
+<li>Agriculture - crop selection</li>
+<li>&hellip;<br/></li>
+</ul>
+
+<p>The rest is up to you! This is a great data set and there are a lot more pieces of information lurking within it. I want people to do their own EDA and send me anything interesting! </p>
+
+<p>Some fun things to check out:  </p>
+
+<ul>
+<li>What was the most common name for a hurricane?</li>
+<li>Do the names actually follow an alphabetical pattern through time? (This is one is tricky)</li>
+<li>If the names are in alphabetical order, how often does a letter get repeated in a year?</li>
+<li>Can we merge this data with FEMA, charitable donations, or other aid data?</li>
+</ul>
+
+<p>To get you started on the first one, here&#39;s the Top 10 most common names for tropical storms. Why do you think it&#39;s Florence?</p>
+
+<p><img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-12-1-1.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" style="display: block; margin: auto;" /></p>
+
+<p>Thank you for reading, I hope this helps you with your own data. The code is all written in R and is located on my <a href="https://github.com/stoltzmaniac/Tropical-Storm-Data-Analysis">GitHub</a>. You can also find other data visualization posts and usages of ggplot2 on my blog <a href="https://www.stoltzmaniac.com?utm_campaign=bottom_of_tropical_storm_post">Stoltzmaniac</a></p>
+

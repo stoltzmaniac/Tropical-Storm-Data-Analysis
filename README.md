@@ -1,5 +1,8 @@
 
 
+## (knit in RMarkdown after cloning, the charts and graphs were distorted by attempting to use RWordPress - still working out the kinks)
+
+
 
 # Exploratory Data Analysis of Tropical Storms in R  
 
@@ -55,7 +58,7 @@ We can confirm that this particular data had storms from 1851 - 2010, that means
 #### Step 3: Make a basic plot  
 
 
-<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-2-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" />
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-2-1-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" />
  
 
 This is a great illustration of our data set and we can easily notice an upward trend in the number of storms over time. Before we go running to tell the world that the number of storms per year is growing, we need to drill down a bit deeper. This could simply be caused because more types of storms were added to the data set (we know there are hurricanes, tropical storms, waves, etc.) being recorded. However, we should keep it in mind when we start to develop hypotheses.  
@@ -108,7 +111,7 @@ Again, we have to be careful because these numbers are in aggregate and may not 
 #### Step 5: Make a more interesting plot  
 
 
-<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" style="display: block; margin: auto;" />
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-5-1-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" style="display: block; margin: auto;" />
   
 
 Because I was most interested in hurricanes, I filtered out only the data which was classified as "H (1-5)." By utilizing a data visualization technique called "small multiples" I was able to pull out the different types and view them within the same graph. While this is possible to do in tables and spreadsheets, it's much easier to visualize this way. By holding the axes constant, we can see the majority of the storms are classified as H1 and then it appears to consistently drop down toward H5 (with very few actually being classified as H5). We can also see that most have an upward trend from 1950 - 2010. The steepest appears to be H1 (but it also flattens out over the last decade).  
@@ -144,7 +147,7 @@ Be ready, as soon as you make a statement like that, you will likely have to exp
 
 #### Step 7: Try visualizing your statements  
 
-<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-7-1.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" style="display: block; margin: auto;" />
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-7-1-1.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" style="display: block; margin: auto;" />
 
 
 A histogram and/or density plot is a great way to visualize the distribution of the data you are making statements about. This plot helps to show that we are looking at a right-skewed distribution with substantial variance. Knowing that we have n = 58 (meaning 58 years after being aggregated), it's not surprising that our histogram looks sparse and our density plot has an unusual shape. At this point, you can make a decision to jot this down, research it in depth and then attack it with full force.  
@@ -156,14 +159,14 @@ However, that's not what we're covering in this post.
 #### Step 8: Plot another aspect of your data
 
 
-<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-8-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" style="display: block; margin: auto;" />
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-8-1-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" style="display: block; margin: auto;" />
 
 
 60K pieces of data can get out of hand quickly, we need to back this down into manageable chunks. Building on the knowledge from our last exploration, we should be able to think of a way to cut this down to get some better information. The concept of small multiples could come in handy again! Splitting the data up by type of storm could prove to be invaluable. We can also tell that we are missing
 
 -----
 
-<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-9-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" style="display: block; margin: auto;" />
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-9-1-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" style="display: block; margin: auto;" />
   
 
 After filtering the data down to hurricanes and utilizing a heatmap rather than plotting individual points we can get a better handle on what is happening where. The H4 and H5 sections are probably the most interesting. It appears as if H4 storms are more frequent on the West coast of Mexico whereas the H5 are most frequent in the Gulf of Mexico.  
@@ -172,7 +175,7 @@ After filtering the data down to hurricanes and utilizing a heatmap rather than 
 Because we're still in EDA mode, we'll continue with another plot.  
 
 
-<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-10-1.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" style="display: block; margin: auto;" />
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-10-1-1.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" style="display: block; margin: auto;" />
 
 
 Here are some of the other storms from the data set. We can see that TD, TS and L have large geographical spreads. The E, SS, and SD storms are concentrated further North toward New England.  
@@ -183,27 +186,35 @@ Digging into this type of data and building probabalistic models is a fascinatin
 #### Step 9: Look for a relationship
 
 
-<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-11-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" style="display: block; margin: auto;" />
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-11-1-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" style="display: block; margin: auto;" />
   
    
 What is the relationship between WIND_KTS and PRESSURE? This chart helps us to see that low PRESSURE and WIND_KTS are likely negatively correlated. We can also see that the WIND_KTS is essentially the predictor in the data set which can perfectly predict how a storm is classified. Well, it turns out, that's basically the distinguising feature when scientists are determining how to categorize these storms!  
 
 
-#### Step N......
+#### Step N......  
 
+We have done some basic EDA and identified some patterns in the data. While doing some EDA is simply just for fun, in most data analysis, it's important to find a place to apply these discoveries by making and testing hypotheses! There are plenty of industries where you could find a use for this:  
+
+  * Insurance - improve statistical modeling and risk analysis
+  * Real Estate Development - identify strategic investment locations
+  * Agriculture - crop selection
+  * ...  
+  
 The rest is up to you! This is a great data set and there are a lot more pieces of information lurking within it. I want people to do their own EDA and send me anything interesting! 
 
-Some food for thought:  
+Some fun things to check out:  
 
   * What was the most common name for a hurricane?
   * Do the names actually follow an alphabetical pattern through time? (This is one is tricky)
+  * If the names are in alphabetical order, how often does a letter get repeated in a year?
   * Can we merge this data with FEMA, charitable donations, or other aid data?
 
   
 To get you started on the first one, here's the Top 10 most common names for tropical storms. Why do you think it's Florence?
 
 
-<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-12-1.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" style="display: block; margin: auto;" />
+<img src="https://www.stoltzmaniac.com/wp-content/uploads/2017/09/unnamed-chunk-12-1-1.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" style="display: block; margin: auto;" />
 
 
 Thank you for reading, I hope this helps you with your own data. The code is all written in R and is located on my [GitHub](https://github.com/stoltzmaniac/Tropical-Storm-Data-Analysis). You can also find other data visualization posts and usages of ggplot2 on my blog [Stoltzmaniac](https://www.stoltzmaniac.com?utm_campaign=bottom_of_tropical_storm_post)

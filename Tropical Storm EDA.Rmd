@@ -56,7 +56,7 @@ We can confirm that this particular data had storms from 1851 - 2010, that means
 #### Step 3: Make a basic plot  
 
 
-```{r}
+```{r, fig.height = 4}
 df = data %>%
   filter(NAME != 'NOTNAMED' & NAME != 'SUBTROP1') %>%
   group_by(YEAR) %>%
@@ -116,7 +116,7 @@ Again, we have to be careful because these numbers are in aggregate and may not 
 #### Step 5: Make a more interesting plot  
 
 
-```{r}
+```{r, fig.height = 4}
 df = data %>%
   filter(NAME != 'NOTNAMED' & NAME != 'SUBTROP1') %>%
   filter(grepl("H", CAT)) %>%
@@ -255,7 +255,7 @@ Digging into this type of data and building probabalistic models is a fascinatin
 #### Step 9: Look for a relationship
 
 
-```{r}
+```{r, fig.height = 4}
 df = data %>% 
   filter(PRESSURE > 0) %>%
   filter(grepl("H", CAT)) %>%
@@ -277,21 +277,29 @@ p +
 What is the relationship between WIND_KTS and PRESSURE? This chart helps us to see that low PRESSURE and WIND_KTS are likely negatively correlated. We can also see that the WIND_KTS is essentially the predictor in the data set which can perfectly predict how a storm is classified. Well, it turns out, that's basically the distinguising feature when scientists are determining how to categorize these storms!  
 
 
-#### Step N......
+#### Step N......  
 
+We have done some basic EDA and identified some patterns in the data. While doing some EDA is simply just for fun, in most data analysis, it's important to find a place to apply these discoveries by making and testing hypotheses! There are plenty of industries where you could find a use for this:  
+
+  * Insurance - improve statistical modeling and risk analysis
+  * Real Estate Development - identify strategic investment locations
+  * Agriculture - crop selection
+  * ...  
+  
 The rest is up to you! This is a great data set and there are a lot more pieces of information lurking within it. I want people to do their own EDA and send me anything interesting! 
 
-Some food for thought:  
+Some fun things to check out:  
 
   * What was the most common name for a hurricane?
   * Do the names actually follow an alphabetical pattern through time? (This is one is tricky)
+  * If the names are in alphabetical order, how often does a letter get repeated in a year?
   * Can we merge this data with FEMA, charitable donations, or other aid data?
 
   
 To get you started on the first one, here's the Top 10 most common names for tropical storms. Why do you think it's Florence?
 
 
-```{r}
+```{r, fig.height = 4}
 top_names = data %>%
   filter(NAME != 'NOTNAMED' & NAME != 'SUBTROP1') %>%
   group_by(NAME) %>%
